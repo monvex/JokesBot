@@ -11,13 +11,13 @@ def create_jokes_keyboard(args: list, page: int, maxlen: int) -> InlineKeyboardM
     if len(args) < startindex + maxlen:
         for i in range(startindex, len(args)):
             builder.row(InlineKeyboardButton(
-                text=f'{i + 1} - {str(args[i][0][:50])}',
+                text=f'{i + 1}',
                 callback_data=str(i)
             ))
     else:
         for i in range(startindex, startindex + maxlen):
             builder.row(InlineKeyboardButton(
-                text=f'{i + 1} - {str(args[i][0][:50])}',
+                text=f'{i + 1}',
                 callback_data=str(i)
             ))
     #
@@ -60,13 +60,13 @@ def create_edit_keyboard(args: list, page: int, maxlen: int) -> InlineKeyboardMa
     if len(args) < startindex + maxlen:
         for i in range(startindex, len(args)):
             builder.row(InlineKeyboardButton(
-                text=f'{LEXICON["del"]} {i+1} - {args[i][0][:50]}',
+                text=f'{LEXICON["del"]} {i+1}',
                 callback_data=f'{i}del'
             ))
     else:
         for i in range(startindex, startindex + maxlen):
             builder.row(InlineKeyboardButton(
-                text=f'{LEXICON["del"]} {i+1} - {args[i][0][:50]}',
+                text=f'{LEXICON["del"]} {i+1}',
                 callback_data=f'{i}del'
             ))
     builder.row(
