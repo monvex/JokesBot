@@ -10,12 +10,13 @@ from keyboards.bookmarks_kb import (create_jokes_keyboard,
 from keyboards.pagination_kb import create_pagination_keyboard
 from lexicon.lexicon import LEXICON
 from services.file_handling import BOOK_PATH, load_jokes, rewrite_jokes
+from config_data.config import Config, load_config
 import os
 import sys
 import random
 book: list
 router = Router()
-
+config: Config = load_config()
 
 # Этот хэндлер будет срабатывать на команду "/start" -
 # добавлять пользователя в базу данных, если его там еще не было
@@ -25,7 +26,7 @@ async def process_start_command(message: Message):
     book = load_jokes(os.path.join(sys.path[0],
                 os.path.normpath(BOOK_PATH)))
     jokes_db['jokes'] = book
-    await message.answer(LEXICON[message.text])
+    await message.answer(LEXICON[message.text], )
     await message.answer(LEXICON['/jokes'],
                          reply_markup=create_jokes_keyboard(
                             jokes_db['jokes'],
@@ -53,7 +54,7 @@ async def process_newjoke_command(message: Message):
 # Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
 # с шуткой
 @router.callback_query(IsDigitCallbackData())
-async def process_bookmark_press(callback: CallbackQuery):
+async def process_joke_press(callback: CallbackQuery):
     book = load_jokes(os.path.join(sys.path[0],
                 os.path.normpath(BOOK_PATH)))
     jokes_db['jokes'] = book
@@ -169,18 +170,25 @@ async def process_backward_press(callback: CallbackQuery):
 # "редактировать" под списком закладок
 @router.callback_query(F.data == 'edit_jokes')
 async def process_edit_press(callback: CallbackQuery):
-    book = load_jokes(os.path.join(sys.path[0],
-                os.path.normpath(BOOK_PATH)))
-    jokes_db['jokes'] = book
-    print(book)
-    await callback.message.edit_text(
-        text=LEXICON[callback.data],
-        reply_markup=create_edit_keyboard(
-            jokes_db['jokes'],
-            jokes_db['page'],
-            jokes_db['max_page_len']
+    if callback.from_user.id in config.tg_bot.admin_ids:
+        book = load_jokes(os.path.join(sys.path[0],
+                    os.path.normpath(BOOK_PATH)))
+        jokes_db['jokes'] = book
+        await callback.message.edit_text(
+            text=LEXICON[callback.data],
+            reply_markup=create_edit_keyboard(
+                jokes_db['jokes'],
+                jokes_db['page'],
+                jokes_db['max_page_len']
+            )
         )
-    )
+    else:
+        await callback.message.edit_text(
+            text=LEXICON['no_permission'],
+            reply_markup=create_pagination_keyboard(
+            'backward'
+            )
+        )
     await callback.answer()
 
 
