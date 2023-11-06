@@ -35,6 +35,19 @@ async def process_start_command(message: Message):
                          ))
 
 
+@router.message(Command(commands='start@Shutnyarbl4Bot'))
+async def process_start_command(message: Message):
+    book = load_jokes(os.path.join(sys.path[0],
+                os.path.normpath(BOOK_PATH)))
+    jokes_db['jokes'] = book
+    await message.answer(LEXICON[message.text], )
+    await message.answer(LEXICON['/jokes'],
+                         reply_markup=create_jokes_keyboard(
+                            jokes_db['jokes'],
+                            jokes_db['page'],
+                            jokes_db['max_page_len']
+                         ))
+
 # Добавляет новую шутку в бд
 @router.message(IsJokeData())
 async def process_newjoke_command(message: Message):
