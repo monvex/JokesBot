@@ -21,7 +21,7 @@ config: Config = load_config()
 # Этот хэндлер будет срабатывать на команду "/start" -
 # добавлять пользователя в базу данных, если его там еще не было
 # и отправлять ему приветственное сообщение
-@router.message(CommandStart())
+@router.message(Command(commands=['start']))
 async def process_start_command(message: Message):
     book = load_jokes(os.path.join(sys.path[0],
                 os.path.normpath(BOOK_PATH)))
@@ -35,7 +35,7 @@ async def process_start_command(message: Message):
                          ))
 
 
-@router.message(Command(commands='start@Shutnyarbl4Bot'))
+@router.message(Command(commands=['start@Shutnyarbl4Bot']))
 async def process_start_command(message: Message):
     book = load_jokes(os.path.join(sys.path[0],
                 os.path.normpath(BOOK_PATH)))
